@@ -1,0 +1,13 @@
+# Ignore all data by default
+data/*
+
+# But allow specific files/folders back in
+!data/.gitkeep
+!data/DRIFT_DATA_TRAIN.csv
+!data/DRIFT_DATA_TEST.csv
+
+# Common junk
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
