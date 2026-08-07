@@ -1,0 +1,20 @@
+name: mcgill
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python
+  - xarray
+  - numpy
+  - scipy
+  - jupyter
+  - matplotlib
+  - pyinstaller
+  - openpyxl
+  - netcdf4
+  - cartopy
+  - gsw
+  - ffmpeg
+  - numba
+variables:
+  KMP_DUPLICATE_LIB_OK: 'TRUE'
