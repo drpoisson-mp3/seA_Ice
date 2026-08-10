@@ -3,13 +3,12 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python
+  - python=3.13
   - xarray
   - numpy
   - scipy
   - jupyter
   - matplotlib
-  - pyinstaller
   - openpyxl
   - netcdf4
   - cartopy
