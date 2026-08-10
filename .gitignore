@@ -5,6 +5,9 @@ data/*
 !data/.gitkeep
 !data/DRIFT_DATA_TRAIN.csv
 !data/DRIFT_DATA_TEST.csv
+!data/latitude_EASE.csv
+!data/longitude_EASE.csv
+!data/bathymetry_EASE.csv
 
 # Common junk
 __pycache__/
