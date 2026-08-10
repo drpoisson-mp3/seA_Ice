@@ -8,6 +8,7 @@ data/*
 !data/latitude_EASE.csv
 !data/longitude_EASE.csv
 !data/bathymetry_EASE.csv
+!data/README.txt
 
 # Common junk
 __pycache__/
