@@ -42,7 +42,7 @@ trainpd['buoynorm']=np.sqrt(trainpd['u_buoy']**2+trainpd['v_buoy']**2)
 # NORMALIZATION STEP
 
 # for the speeds, we substract the mean and divide by the standard deviation to get some cleaner distribution
-speeds=['u_buoy', 'v_buoy', 'u_ERA5', 'v_ERA5', 'windnorm','buoynorm']
+speeds=['u_buoy', 'v_buoy', 'u_ERA5', 'v_ERA5']
 
 means={}
 stds={}
@@ -55,6 +55,12 @@ for label in speeds:
 print(means)
 print(stds)
 # SIC is already [0,1] and sea ice thickness is typically between 0 and idk 5 nothing is needed
+# for the norms, we divide by maximum
+max_wind=np.max(np.abs(trainpd['windnorm']))
+trainpd['windnorm']=trainpd['windnorm']/max_wind
+
+max_buoy =np.max(np.abs(trainpd['buoynorm']))
+trainpd['buoynorm']=trainpd['buoynorm']/max_buoy
 
 # For the x,y, we simply divide by the max?
 max_x=np.max(np.abs(trainpd['x_EASE']))
@@ -137,9 +143,9 @@ import torch.optim as optim
 # Hyperparameters
 # lr=0.001
 
-epoch=1000
-lr_start=1e-3
-lr_end=1e-5
+epoch=5000
+lr_start=5e-3
+lr_end=5e-5
 lr= np.linspace(lr_start, lr_end, epoch)
 # l=np.full_like(lr,0.00001)
 # lr=np.hstack((lr,l))
