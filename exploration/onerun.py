@@ -36,8 +36,8 @@ trainpd['windnorm']=np.sqrt(trainpd['u_ERA5']**2+trainpd['v_ERA5']**2)
 trainpd['buoynorm']=np.sqrt(trainpd['u_buoy']**2+trainpd['v_buoy']**2)
 
 # Adding the bathymetry
-#bath= pd.read_csv('../data/bathymetry_EASE.csv').values
-#trainpd['bath']= bath[trainpd['y_EASE'].astype(int),trainpd['x_EASE'].astype(int)]
+bath= pd.read_csv('../data/bathymetry_EASE.csv').values
+trainpd['bath']= bath[trainpd['y_EASE'].astype(int),trainpd['x_EASE'].astype(int)]
 
 # NORMALIZATION STEP
 
@@ -71,8 +71,8 @@ trainpd['y_EASE']=trainpd['y_EASE']/max_y
 
 #For the Bathymetry we divide by the max as well (is actually a min)
 
-#max_bathy=np.max(np.abs(trainpd['bath']))
-#trainpd['bath']=trainpd['bath']/max_bathy
+max_bathy=np.max(np.abs(trainpd['bath']))
+trainpd['bath']=trainpd['bath']/max_bathy
 
 
 target = pd.DataFrame(trainpd['buoynorm'])# 
@@ -144,7 +144,7 @@ import torch.optim as optim
 # lr=0.001
 
 epoch=5000
-lr_start=5e-3
+lr_start=1e-3
 lr_end=5e-5
 lr= np.linspace(lr_start, lr_end, epoch)
 # l=np.full_like(lr,0.00001)
@@ -226,6 +226,8 @@ ax.plot(xx,epochavg,'.-k')
 #fig.legend()
 #plt.xlim([15000,20000])
 plt.savefig(f'.//outputs//babygpu{traintensor.shape[1]}inputs_{epoch}E_{lr_start}LR{lr_end}_{labels[0].item()}_XYEASE.png')
+plt.close('all')
 
+plt.plot(xx, epochavg, '.-')
 with open('timestamps.txt', 'a') as f: 
     f.write(f"{datetime.now()}\n")
