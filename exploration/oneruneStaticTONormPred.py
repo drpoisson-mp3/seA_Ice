@@ -76,6 +76,7 @@ trainpd['y_EASE']=trainpd['y_EASE']/max_y
 
 max_bathy=np.max(np.abs(trainpd['bath']))
 trainpd['bath']=trainpd['bath']/max_bathy
+print(max_bathy)
 
 
 staticpd = trainpd.drop(['u_buoy', 'v_buoy','buoynorm'],axis=1) # Take away the time of the year, wrong dtype and seems to be useless anyway
