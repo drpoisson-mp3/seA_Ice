@@ -63,7 +63,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
 
     # opening the csv
     ds=pd.read_csv(filename)
-    ds=ds.drop(['year','month','day','id_buoy'],axis=1) #unwanted quantities
+
 
     if bs==0:
         bs=len(ds)
@@ -117,8 +117,6 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
         #ADDING THE COS AND SIN OF THE YEAR
         ds['sin']=np.sin(ds['doy']*(2*np.pi/364))
         ds['cos']=np.cos(ds['doy']*(2*np.pi/364))
-        #dropping the day of year
-        ds=ds.drop(['doy'], axis=1)
         print('Sin and Cos added')
 
     # POSITIONS
@@ -207,7 +205,6 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
 
     # opening the csv
     ds=pd.read_csv(filename)
-    ds=ds.drop(['year','month','day','id_buoy'],axis=1) #unwanted quantities
 
     means={}
     stds={}
@@ -267,8 +264,6 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
         #ADDING THE COS AND SIN OF THE YEAR
         ds['sin']=np.sin(ds['doy']*(2*np.pi/364))
         ds['cos']=np.cos(ds['doy']*(2*np.pi/364))
-        #dropping the day of year
-        ds=ds.drop(['doy'], axis=1)
         print('Sin and Cos added')
     # POSITIONS
   
