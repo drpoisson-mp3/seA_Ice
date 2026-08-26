@@ -1,0 +1,3 @@
+Model: mlp256 (on gpu)
+Weights: NNforNorms_5inputs_20E_0.001lr_26-15h_44m_21s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'sic_CDR', 'windnorm']

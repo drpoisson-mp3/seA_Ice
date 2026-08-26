@@ -5,20 +5,22 @@ from torch.utils.data import TensorDataset,DataLoader
 
 
 def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-5, log1pwind=False, shuffle=True):
-    """Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
+    """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
+    Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
     based on the filename containing
     the data and uses all available data,\n
     IMPORTANTLY IT USES THE MEAN, STDS and MAXES from the training set\n
     if NO MEANS/STDS/MAXES provided, it opens training_file and calculates the above\n
     an inputlist which contains the same inputs models trained on\n
-    sin/cos (of the year), \n
     x/y_ease, \n
+    bath (bathymetry)\n
+    sin/cos (of the year), \n
     u/v_ERA5,\n
+    windnorm,\n
     sic_CDR',\n
     h_piomas,\n
-    windnorm,\n
-    bath (bathymetry)\n
-    and the target can be (for now) again case-sensitive: \n
+
+    Target can be (for now) again case-sensitive: \n
     u/v \n
     buoynorm (precise log1p for proper normalization)\n
     static\n
@@ -186,16 +188,17 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
     return datapd,dataset,dataloader,means,stds,maxes,labels
 
 def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-5, log1pwind=False, shuffle=True):
-    """Function returning a training dataset, dataloader, the means and stds and maxes, based on the filename containing
+    """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
+    Function returning a training data (pd.dframe), dataset, dataloader, the means and stds and maxes, based on the filename containing
     the data, a selected batchsize = bs, an inputlist which could contain (case-sensitive, w/o what's in between the brackets):\n
+     x/y_ease, \n
+    bath (bathymetry)\n
     sin/cos (of the year), \n
-    x/y_ease, \n
     u/v_ERA5,\n
+    windnorm,\n
     sic_CDR',\n
     h_piomas,\n
-    windnorm,\n
-    bath (bathymetry)\n
-    and the target can be (for now) again case-sensitive: \n
+    Target can be (for now) again case-sensitive: \n
     u/v \n
     buoynorm (precise log1p for proper normalization)\n
     static\n
@@ -219,7 +222,7 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
         if log1p==True:
             #log1p Normalization
             ds['buoynorm']=np.log1p(ds['buoynorm'])
-            targeted=ds[['buynorm']]
+            targeted=ds[['buoynorm']]
             print('Target is buoynorm normalized by log1p')
         
         elif log1p==False:

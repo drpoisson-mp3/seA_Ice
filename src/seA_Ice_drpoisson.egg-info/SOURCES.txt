@@ -1,9 +1,9 @@
 LICENSE
 README.md
 pyproject.toml
-src/AIce_utils/__init__.py
-src/AIce_utils/functions.py
-src/AIce_utils/models.py
+src/AIce/__init__.py
+src/AIce/functions.py
+src/AIce/models.py
 src/seA_Ice_drpoisson.egg-info/PKG-INFO
 src/seA_Ice_drpoisson.egg-info/SOURCES.txt
 src/seA_Ice_drpoisson.egg-info/dependency_links.txt

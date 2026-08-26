@@ -1,0 +1,3 @@
+Model: mlp256 (on gpu)
+Weights: NNforNorms_2inputs_20E_0.001lr_26-15h_46m_08s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5']
