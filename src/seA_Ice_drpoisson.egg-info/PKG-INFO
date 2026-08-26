@@ -1,0 +1,27 @@
+Metadata-Version: 2.4
+Name: seA_Ice_drpoisson
+Version: 0.0.1
+Summary: Contains my master's research repo so that I can import functions faster. On python=3.13
+Author-email: Damien Robledo Poisson <damien.robledopoisson@mail.mcgill.ca>
+License-Expression: GPL-3.0-only
+Project-URL: Homepage, https://github.com/drpoisson-mp3/seA_Ice
+Classifier: Programming Language :: Python :: 3
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Dynamic: license-file
+
+# seA_Ice
+## Sea Ice Motion from a Machine Learning perspective
+
+### Folders
+- Data contains the data as one expects
+- Exploration contains many files, more or less chaotically structured where I explored different Neural Nets, training, etc. 
+- The monthly folders correspond to the work done that month (might be changed for another structure in the future)
+
+### General Files
+- This readme
+- environement.yml contains all the Python packages I use in the following code that can be installed via conda (thinking of switching to uv)
+- requirements-pip.txt contains the packages that must be install via pip (torch)
+- Journal is an attempt at writing down my daily work

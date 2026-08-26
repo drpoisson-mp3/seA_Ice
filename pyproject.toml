@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "seA_Ice_drpoisson"
+version = "0.0.1"
+authors = [
+  { name="Damien Robledo Poisson", email="damien.robledopoisson@mail.mcgill.ca" },
+]
+description = "Contains my master's research repo so that I can import functions faster. On python=3.13"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-only"
+license-files = ["LICENSE"]
+
+[project.urls]
+Homepage = "https://github.com/drpoisson-mp3/seA_Ice"
