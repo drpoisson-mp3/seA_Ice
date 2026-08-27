@@ -4,6 +4,10 @@ import numpy as np
 from torch.utils.data import TensorDataset,DataLoader
 
 
+def getRMSE(Target,Outputs):
+    """To get the RMSE over the entire testset"""
+    return np.sqrt(np.mean((Target-Outputs)**2))
+
 def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-5, log1pwind=False, shuffle=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
