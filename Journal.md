@@ -4,3 +4,8 @@
 2026-08-26:
 - Today, I turned the helper py files into an actual packages which was new and slightly confusing but actually easy and quite satisfying. The rest of the day, I worked on making systematic expirements with 20 E and it works so nicely with the helper functions, still some perfecting of the method but overall workflow is great. I also worked on some stuff for caos and the group. 
   
+2026-08-27:
+- Today, I made an analysis file but there seems to be a problem with the loading of data but I belive there is an easy fix. I also started working on website
+
+2027-08-28:
+- 
