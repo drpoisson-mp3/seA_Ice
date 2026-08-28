@@ -4,7 +4,10 @@ import torch.nn.functional as F
 
 
 class firstNN(nn.Module):
-
+    """First NN I made, predicts 2 outputs,
+        i.e. it used to predict u/v.\n
+        It is a MLP with Relu, n_inputs->128->64
+        linear 64->2"""
     def __init__(self, n_inputs):
         """First NN I made, predicts 2 outputs,
         i.e. it used to predict u/v.\n
@@ -30,7 +33,9 @@ class firstNN(nn.Module):
         return x
 
 class uv256NN(nn.Module):
-
+    """To calculate u/v\n
+        MLP: 256->128->64 with ReLu\n
+        linear 64->2"""
     def __init__(self, n_inputs):
         """To calculate u/v\n
         MLP: 256->128->64 with ReLu\n
@@ -55,7 +60,9 @@ class uv256NN(nn.Module):
         return x
 
 class staticNN(nn.Module):
-
+    """To calculate Staticity\n 
+        MLP with Relu, n_inputs->256->128->64
+        linear 64->1"""
     def __init__(self, n_inputs):
         """To calculate Staticity\n 
         MLP with Relu, n_inputs->256->128->64
@@ -82,7 +89,9 @@ class staticNN(nn.Module):
         return x
 
 class NNforNorms(nn.Module):
-    """Hummmm"""
+    """THE FINAL LAYER IS NOT LINEAR FOR THE LOG1Ped Norms
+        MLP with Relu, 256->128->64\n
+        SOFTPLUS 64->2"""
     def __init__(self, n_inputs):
         """THE FINAL LAYER IS NOT LINEAR FOR THE LOG1Ped Norms
         MLP with Relu, 256->128->64\n
