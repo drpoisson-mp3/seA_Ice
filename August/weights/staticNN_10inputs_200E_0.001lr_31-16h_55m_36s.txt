@@ -1,0 +1,4 @@
+Model: static256 (on gpu)
+Weights: stat256_10inputs_200E_0.001lr_31-16h_55m_36s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'sic_CDR', 'x_EASE', 'y_EASE', 'bath', 'sin', 'cos', 'windnorm'] 
+Weight favouring true positive: tensor([70.9603], device='cuda:0', dtype=torch.float64)
