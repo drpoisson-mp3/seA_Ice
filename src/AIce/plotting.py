@@ -65,3 +65,34 @@ def ResidualOnTheMap(data,pred='',target='buoynorm', vmin=-10,vmax=10):
     plt.colorbar(sc, ax=ax, label='Residual (Target - Prediction) [cm/s]', shrink=0.7)
     #plt.title('Spatial distribution of velocity-norm residuals')
     plt.show()
+
+
+def RecallPrecisionStatic(truth,pred,res=100,xmin=0,xmax=1):
+    scores =pred
+    y_true= truth
+    thresholds = np.linspace(0, 1, res+1) # Looking at predictions from 0,100%
+    precisions = []
+    recalls = []
+    
+    for t in thresholds:
+        
+        pred_static = scores >= t # retains the number of prediction with certainty above the t threshold
+
+        tp = (pred_static & y_true).sum() # True positive (pred=true, y=true)
+        fp = (pred_static & ~y_true).sum() # false positive (pred= true, y=false)
+        fn = (~pred_static & y_true).sum() # false negative (pred = false, y=true)
+
+        precision = tp / (tp + fp) if (tp + fp) > 0 else np.nan # "of the things I called static, how many actually were?"
+        recall = tp / (tp + fn) if (tp + fn) > 0 else np.nan # "how many of the real statics did I find?"
+
+        precisions.append(precision)
+        recalls.append(recall)
+
+    plt.plot(thresholds, precisions, label='precision')
+    plt.plot(thresholds, recalls, label='recall')
+    plt.xlabel('threshold')
+    plt.xticks([x/10 for x in range(10) ])
+    plt.xlim([xmin,xmax])
+    plt.grid()
+    plt.legend()
+    plt.show()

@@ -8,7 +8,46 @@ def getRMSE(Target,Outputs):
     """To get the RMSE over the entire testset"""
     return np.sqrt(np.mean((Target-Outputs)**2))
 
-def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-5, log1pwind=False, shuffle=True):
+def torchRMSE(target,outputs):
+    '''GPU and backprop Friendly. Calculates the RMSE between, the target and the model outputs'''
+    return (torch.mean((target-outputs)**2))**.5
+
+def Static0Danalysis(truth,pred,threshold=.95):
+    """Returns the 0D analysis information for the Static model, and a mask where given a threshold the model predicts staticity (TRUE)\n
+    Precision means of the things I called static/moving, how many actually were? and Recall means how many of the real static/moving did I find?\n
+    Static Recall %, Moving Recall %, Static Precision %, Moving Precision %, Total Precision %"""
+    zeroD={}
+    mask = pred >= threshold# mask for 95% sure of staticity
+    # datapd.loc[mask,'output']=True # reassign the values to True
+    # datapd.loc[~mask, 'output']=False # or False
+
+    pred= mask.astype(bool) # lol you can reassigne both in one go 
+
+    # For denominator in percentages 
+    total_cases=len(pred) 
+    total_static=(truth.sum())
+    total_moving= total_cases-total_static
+
+
+    truestatic = (pred & truth).sum() # Where the mask predict Static
+    truemoving = (~pred & ~truth).sum() # Where the mask predicts moves
+
+
+    print("Precision means of the things I called static/moving, how many actually were?")
+    print("Recall means how many of the real static/moving did I find?")
+    print('Static Recall %', truestatic/total_static)
+    print('Moving Recall %', truemoving/total_moving)
+    print('Static Precision %', truestatic/mask.sum())
+    print('Moving Precision %', truemoving/((~mask).sum()))
+    print('Total Precision %', (truemoving+truestatic)/total_cases)
+    zeroD['static_recall']=truestatic/total_static
+    zeroD['moving_recall']=truemoving/total_moving
+    zeroD['static_precision']=truestatic/mask.sum()
+    zeroD['moving_precision']=truemoving/((~mask).sum())
+    zeroD['total_precision']= (truemoving+truestatic)/total_cases
+    return zeroD,pred
+
+def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
     based on the filename containing
@@ -191,7 +230,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
 
     return datapd,dataset,dataloader,means,stds,maxes,labels
 
-def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-5, log1pwind=False, shuffle=True):
+def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a training data (pd.dframe), dataset, dataloader, the means and stds and maxes, based on the filename containing
     the data, a selected batchsize = bs, an inputlist which could contain (case-sensitive, w/o what's in between the brackets):\n

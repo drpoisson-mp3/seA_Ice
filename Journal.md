@@ -7,5 +7,8 @@
 2026-08-27:
 - Today, I made an analysis file but there seems to be a problem with the loading of data but I belive there is an easy fix. I also started working on website
 
-2027-08-28:
-- 
+2026-08-28:
+- Principalement travailler sur le site web, aussi creer les plotting functions et explorer les distributions
+
+2026-08-31
+- Made a clean static Training and Analysis pipeline. Could implement the a combined version pretty efficiently tmr.
