@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 from matplotlib.colors import Normalize
 import matplotlib.colors as cm
+import matplotlib as mpl
+
+
 import numpy as np
 import pandas as pd
 import cartopy.crs as ccrs
@@ -68,6 +71,7 @@ def ResidualOnTheMap(data,pred='',target='buoynorm', vmin=-10,vmax=10):
 
 
 def RecallPrecisionStatic(truth,pred,res=100,xmin=0,xmax=1):
+    """Not sure how robust it is but could work"""
     scores =pred
     y_true= truth
     thresholds = np.linspace(0, 1, res+1) # Looking at predictions from 0,100%
@@ -94,5 +98,26 @@ def RecallPrecisionStatic(truth,pred,res=100,xmin=0,xmax=1):
     plt.xticks([x/10 for x in range(10) ])
     plt.xlim([xmin,xmax])
     plt.grid()
+    plt.legend()
+    plt.show()
+
+
+def histogrammeur(data,target,modellist, lim=[0,25],cmap='viridis', n_bins=100, couleur_verite= "#C52C4684"):
+    """Histogrammer plusieurs model en meme temps"""
+    norm=Normalize(0,len(modellist))
+    n_bins=100
+    cmap = mpl.colormaps['viridis']
+
+    plt.hist(target,n_bins, histtype='bar', color=couleur_verite, label='La verite')
+    for model in modellist:
+        print(model)
+        #print(model[:2].strip('i'))
+        number=int(model[:2].strip('i'))/10
+        c=cmap(number)
+        plt.hist(data[model],n_bins, color=c, histtype='step', alpha=.75,linewidth = 3 ,  label = model)
+        #print(modelist[model])
+
+    plt.legend()
+    plt.xlim(lim)
     plt.legend()
     plt.show()
