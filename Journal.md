@@ -15,3 +15,9 @@
 
 2026-09-01:
 - I started working on trying to get the interpolation between the data done. It was harder than expected. since the data is super sparse, I had to use griddata from scipy but it was my first time and the is quite huge. I doubt that the result will be good tbh. I also need to find a healthier balance in using AI to help code, shows new useful functions but can make the thought process crowded.
+
+2026-09-02:
+- Mostly worked on the website and on CAOS Stuff so not much towards the msc.
+
+2026-9-03:
+- Worked on the defo maps and concluded with Bruno we got a bit lost. Now I focus on the C_ocn C_air comp of the question. 

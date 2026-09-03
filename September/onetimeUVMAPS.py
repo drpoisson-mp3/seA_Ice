@@ -6,67 +6,58 @@ import numpy as np
 import datetime
 from scipy.interpolate import griddata
 
-
 # Opening the dataset
 ds = pd.read_csv('../data/DRIFT_DATA_TRAIN.csv')
 
-ds['time']=pd.to_datetime(ds[['year',	'month',	'day']]) # Creating datetime index
-ds=ds.drop(['year','month','day','doy'], axis=1) # removing all other time info
-ds=ds.set_index(['time'])
+ds=ds.drop(['year','month','day'], axis=1) # removing all other time info
+ds=ds.set_index(['doy'])
 ds=ds.drop_duplicates()# just in case
 
-daily={time: dailydata for time,dailydata in ds.groupby(ds.index.date)} # group by daily data and turn to dict
-ntime=len(daily) # Useful for later
+doyly={doy: dailydata for doy,dailydata in ds.groupby(ds.index)} # group by daily data and turn to dict
+
 
 # load the bathymetry as a proxy for the land
 bath=pd.read_csv('../data/bathymetry_EASE.csv', header= None)
 
 datamask= (1-bath.isna()) # make sure to check where we have data
-land=(bath.where(bath==3000,np.nan)-3000)
-
+land=(bath.where(bath==3000,np.nan)-3000).to_numpy().astype(np.float32) # getting a land numpy array
+landmask=bath.where(bath!=3000,np.nan)
+oceanmask=(datamask*landmask)
+oceanmask= oceanmask/oceanmask
 
 lat_grid = pd.read_csv('../data/latitude_EASE.csv', header=None).values
 lon_grid = pd.read_csv('../data/longitude_EASE.csv', header=None).values
+y_idx = np.arange(land.shape[0])
+x_idx = np.arange(land.shape[0])
 
+u_map = land.copy()
 
+# v_slice = np.empty_like(land)
+# interU = np.tile(land_arr, (ntime, 1, 1))
+# interV = interU.copy()
 
-
-
-
-land_arr = land.to_numpy().astype(np.float32)  # compute once
-
-u_slice = np.empty_like(land_arr)
-v_slice = np.empty_like(land_arr)
-interU = np.tile(land_arr, (ntime, 1, 1))
-interV = interU.copy()
-
-y_idx = np.arange(interU.shape[1])
-x_idx = np.arange(interU.shape[2])
 
 grid_y, grid_x = np.meshgrid(y_idx, x_idx, indexing='ij')  # once, outside the loop
 
-for i, day in enumerate(daily.keys()):
-    u_slice[:] = land_arr  # cheap in-place copy of an already-numpy array
-    v_slice[:] = land_arr
-    rows = daily[day]['y_EASE'].astype(int).to_numpy()
-    cols = daily[day]['x_EASE'].astype(int).to_numpy()
-    u_slice[rows, cols] = daily[day]['u_buoy']
-    v_slice[rows, cols] = daily[day]['v_buoy']
+# making a map for day1
+interU = np.tile(land, (len(doyly), 1, 1))
 
-    valid_u = ~np.isnan(u_slice)
-    valid_v = ~np.isnan(v_slice)
-    interU[i] = griddata((grid_y[valid_u], grid_x[valid_u]), u_slice[valid_u], (grid_y, grid_x), method='linear')
-    interV[i] = griddata((grid_y[valid_v], grid_x[valid_v]), v_slice[valid_v], (grid_y, grid_x), method='linear')
+for i in doyly:
+    rows = doyly[i]['y_EASE'].astype(int).to_numpy()
+    cols = doyly[i]['x_EASE'].astype(int).to_numpy()
 
-
-
+    u_map[rows,cols]=doyly[i]['u_buoy']
+    u_mapPOINTS=~np.isnan(u_map)
+    interp1=griddata((grid_y[u_mapPOINTS],grid_x[u_mapPOINTS]), u_map[u_mapPOINTS], (grid_y,grid_x), method='cubic')
+    interp1*=oceanmask
+    interU[i-1,:,:]=interp1
 ds = xr.Dataset(
     {
-        'u_inter':(['time', 'y', 'x'], interU),
-        'v_inter':(['time', 'y', 'x'], interV)
+        'u_inter':(['doy', 'y', 'x'], interU),
+
     },
     coords={
-        'time': list(daily.keys()),
+        'doy': list(doyly.keys()),
         'y': y_idx,
         'x': x_idx,
         'lat': (['y', 'x'], lat_grid),
@@ -75,4 +66,3 @@ ds = xr.Dataset(
 )
 
 ds.to_netcdf('./interpolated_velocities.nc','w')
-
