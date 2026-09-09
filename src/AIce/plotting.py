@@ -7,7 +7,6 @@ import matplotlib as mpl
 import numpy as np
 import pandas as pd
 import cartopy.crs as ccrs
-import cartopy.feature as cfeature
 
 def PredAgainstTarget(target,pred,colorer,cmap='viridis',title='Predictions in Terms of Observations',
                       save=False, savepath=''):
@@ -52,18 +51,17 @@ def ResidualOnTheMap(data,pred='',target='buoynorm', vmin=-10,vmax=10):
     # Set a sensible Arctic extent — adjust bounds to your buoy region
     ax.set_extent([-180, 180, 60, 90], crs=ccrs.PlateCarree())
 
-    # Add map context
-    ax.add_feature(cfeature.LAND, facecolor='black')#, zorder=0)
-    # ax.add_feature(cfeature.COASTLINE, linewidth=0.5)
-    # ax.add_feature(cfeature.OCEAN, facecolor='white', zorder=0)
-    ax.gridlines(alpha=.5)#draw_labels=True, linewidth=0.3, alpha=0.5)
-
     sc = ax.scatter(
         lons, lats,
         c=residual, cmap=cmap, norm=norm,
         transform=ccrs.PlateCarree(),  # tells cartopy the data is in lon/lat, not the plot's projection
         s=15, alpha=0.75
     )
+    # Add map context
+    ax.coastlines()
+    # ax.add_feature(cfeature.COASTLINE, linewidth=0.5)
+    # ax.add_feature(cfeature.OCEAN, facecolor='white', zorder=0)
+    ax.gridlines(alpha=.5)#draw_labels=True, linewidth=0.3, alpha=0.5)
 
     plt.colorbar(sc, ax=ax, label='Residual (Target - Prediction) [cm/s]', shrink=0.7)
     #plt.title('Spatial distribution of velocity-norm residuals')

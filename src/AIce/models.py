@@ -116,3 +116,43 @@ class NNforNorms(nn.Module):
         # x=F.sigmoid(self.fc6(x))
         x=self.final(x)
         return F.softplus(x)
+
+
+class NNforAngles(nn.Module):
+    """MLP with Relu, 256->128->64->1\n
+         finale layer linear noRelu64->1"""
+    def __init__(self, n_inputs):
+        super().__init__()
+        self.fc1=nn.Linear(n_inputs,256)
+        self.fc2=nn.Linear(256,128)
+        self.fc3=nn.Linear(128,64)
+        # self.fc4=nn.Linear(32,16)
+        # self.fc5=nn.Linear(16,8)
+        # self.fc6=nn.Linear(8,4)
+        self.final=nn.Linear(64,1)
+        #self.fourier=nn.Linear(n_inputs,n_inputs)
+
+    def forward(self,x):
+        #x=torch.cos(self.fourier(x))
+        x=F.relu(self.fc1(x))
+        x=F.relu(self.fc2(x))
+        x=F.relu(self.fc3(x))
+        # x=F.sigmoid(self.fc4(x))
+        # x=F.sigmoid(self.fc5(x))
+        # x=F.sigmoid(self.fc6(x))
+        x=self.final(x)
+        return x
+
+
+
+class linear(nn.Module):
+    """"Simple single layer Linear model, """
+
+    def __init__(self, n_inputs):
+        super().__init__()
+        self.linear=nn.Linear(n_inputs, 1)
+
+    def forward(self,x):
+        x=self.linear(x)
+        return x
+

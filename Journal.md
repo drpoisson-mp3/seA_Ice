@@ -21,3 +21,9 @@
 
 2026-9-03:
 - Worked on the defo maps and concluded with Bruno we got a bit lost. Now I focus on the C_ocn C_air comp of the question. 
+
+2026-09-08:
+- Quickly played with making a mesh of value to visualize the model, with limited success. I then moved on to working on the theoritical framework to rederive free drift from first principles. 
+
+2026-09-09:
+- Worked on oneslide presentation and other admin stuff in the morning. Following the aos welcome party, worked on making a linear regression model. 
