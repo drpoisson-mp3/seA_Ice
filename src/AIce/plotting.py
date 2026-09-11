@@ -10,7 +10,8 @@ import cartopy.crs as ccrs
 
 def PredAgainstTarget(target,pred,colorer,cmap='viridis',title='Predictions in Terms of Observations',
                       save=False, savepath=''):
-    """Add a description later #flemme"""
+    """target,pred,colorer, are supposed to be arrays
+    plots values of the target agaisnt the prediction colored by some scalar."""
     minn=np.min([np.min(pred),np.min(target)])
     maxx=np.max([np.max(pred),np.max(target)])
     norm=Normalize(np.min(colorer),np.max(colorer))
@@ -101,7 +102,7 @@ def RecallPrecisionStatic(truth,pred,res=100,xmin=0,xmax=1):
 
 
 def histogrammeur(data,target,modellist, lim=[0,25],cmap='viridis', n_bins=100, couleur_verite= "#C52C4684"):
-    """Histogrammer plusieurs model en meme temps"""
+    """Histogrammer plusieurs model en meme temps, needs to be more general, right now it was designed for a specific case"""
     norm=Normalize(0,len(modellist))
     n_bins=100
     cmap = mpl.colormaps['viridis']
@@ -110,9 +111,10 @@ def histogrammeur(data,target,modellist, lim=[0,25],cmap='viridis', n_bins=100, 
     for model in modellist:
         print(model)
         #print(model[:2].strip('i'))
-        number=int(model[:2].strip('i'))/10
-        c=cmap(number)
-        plt.hist(data[model],n_bins, color=c, histtype='step', alpha=.75,linewidth = 3 ,  label = model)
+        #number=int(model[:2].strip('i'))/10
+        #c=cmap(number)
+        plt.hist(data[model],n_bins, #color=c, 
+                 histtype='step', alpha=.75,linewidth = 3 ,  label = model)
         #print(modelist[model])
 
     plt.legend()
