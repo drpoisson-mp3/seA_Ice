@@ -27,3 +27,6 @@
 
 2026-09-09:
 - Worked on oneslide presentation and other admin stuff in the morning. Following the aos welcome party, worked on making a linear regression model. 
+
+2026-9-14:
+- Made a training loop for the Angles and mostly worked on the CIE recommandations. 

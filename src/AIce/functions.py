@@ -79,20 +79,20 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
 
     # BUOYNORMS
     if 'buoynorm'==target:
-        ds['buoynorm']=np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2)
+        buoynorm=np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2)
         if log1p==True:
             #log1p Normalization
-            ds['buoynorm']=np.log1p(ds['buoynorm'])
-            targeted=ds[['buoynorm']]
+            buoynorm=np.log1p(buoynorm)
+            targeted=buoynorm.to_frame(name='buoynorm')
             print('Target is buoynorm normalized by log1p')
         
         elif log1p==False:
             #z-score normalization
-            means['buoynorm']=ds['buoynorm'].mean()
-            stds['buoynorm']=ds['buoynorm'].std()
-            ds['buoynorm']=(ds['buoynorm']-ds['buoynorm'].mean())/ds['buoynorm'].std()
+            means['buoynorm']=buoynorm.mean()
+            stds['buoynorm']=buoynorm.std()
+            buoynorm=(buoynorm-buoynorm.mean())/buoynorm.std()
             print('Target is buoynorm normalized by z-score')
-            targeted=ds[['buynorm']]
+            targeted=buoynorm.to_frame(name='buoynorm')
         
         else:
             print('wdym boolean is not True or False')
@@ -120,11 +120,17 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     
     elif 'angle'==target:
         """Lets get the angles going"""
-        costheta=ds['u_buoy']*ds['u_ERA5']+ds['u_buoy']*ds['u_ERA5']/ \
-            (np.sqrt(ds['u_ERA5']**2+ds['v_ERA5']**2)*np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2))
+        epsilon=1e-10
+        dotproduct=ds['u_buoy']*ds['u_ERA5']+ds['v_buoy']*ds['v_ERA5']
+        norms=(np.sqrt(ds['u_ERA5']**2+ds['v_ERA5']**2)*np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2))+epsilon
+        ds['dotproduct']=dotproduct
+        ds['norms']=norms
+        costheta=dotproduct/norms
+        ds['costheta']=costheta
 
-        ds['angle']= np.arccos(costheta)
+        targeted= np.arccos(costheta).to_frame(name='angle')
         print('allright angles')
+
     else:
         print('Please specify a valid target ( buoynorm, u/v, static, angle)')
         print(targettensor)
@@ -193,10 +199,10 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     #Nothing to do with 'sic_CDR', 'h_piomas'
 
 
-    for i in ds.columns:
-        if i not in inputlist:
-            ds=ds.drop(i,axis=1)
-
+    # for i in ds.columns:
+    #     if i not in inputlist:
+    #         ds=ds.drop(i,axis=1)
+    print(targeted)
     labels=[targeted.columns,ds.columns]
 
 
@@ -279,21 +285,22 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
         print('Bath size is the full test set')
 
     # STARTING WITH TARGET
+    # SAME AS TRAIN EXECPT FOR THE MEANS AND STDS 
 
     # BUOYNORMS
     if 'buoynorm'==target:
-        ds['buoynorm']=np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2)
+        buoynorm=np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2)
         if log1p==True:
             #log1p Normalization
-            ds['buoynorm']=np.log1p(ds['buoynorm'])
-            targeted=ds[['buoynorm']]
+            buoynorm=np.log1p(buoynorm)
+            targeted=buoynorm.to_frame(name='buoynorm')
             print('Target is buoynorm normalized by log1p')
         
         elif log1p==False:
             #z-score normalization
-            ds['buoynorm']=(ds['buoynorm']-means['buoynorm'])/stds['buoynorm']
-            targeted=ds[['buoynorm']]
+            buoynorm=(buoynorm-means['buoynorm'])/stds['buoynorm']
             print('Target is buoynorm normalized by z-score')
+            targeted=buoynorm.to_frame(name='buoynorm')
         
         else:
             print('wdym boolean is not True or False')
@@ -305,7 +312,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
         nospeed=u0*v0
         targeted=nospeed.to_frame(name='static')
         print(f'Target is Staticity with threshold {static_threshold}')
-
+    
     
     # u/v_buoy
     elif 'u/v'==target:
@@ -313,13 +320,26 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
 
         for label in uv:
             ds[label]=(ds[label]-means[label])/stds[label]
+
         targeted = pd.DataFrame([ds['u_buoy'],ds['v_buoy']]).T# had to reshape from u,v x rows to rows x u,v
         print('Target is u/v components of the wind normalized by z-score')
+    
+    elif 'angle'==target:
+        """Lets get the angles going"""
+        epsilon=1e-10
+        dotproduct=ds['u_buoy']*ds['u_ERA5']+ds['v_buoy']*ds['v_ERA5']
+        norms=(np.sqrt(ds['u_ERA5']**2+ds['v_ERA5']**2)*np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2))+epsilon
+        ds['dotproduct']=dotproduct
+        ds['norms']=norms
+        costheta=dotproduct/norms
+        ds['costheta']=costheta
+
+        targeted= np.arccos(costheta).to_frame(name='angle')
+        print('allright angles')
 
     else:
-        print('Please specify a valid target ( buoynorm, u/v, static)')
+        print('Please specify a valid target ( buoynorm, u/v, static, angle)')
         print(targettensor)
-
     
     #time of the year
     if 'sin' in inputlist:
