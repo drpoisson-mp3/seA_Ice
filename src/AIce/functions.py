@@ -48,7 +48,7 @@ def Static0Danalysis(truth,pred,threshold=.95):
     return zeroD,pred
 
 
-def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True):
+def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True, dotcross=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a training data (pd.dframe), dataset, dataloader, the means and stds and maxes, based on the filename containing
     the data, a selected batchsize = bs, an inputlist which could contain (case-sensitive, w/o what's in between the brackets):\n
@@ -121,14 +121,17 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     elif 'angle'==target:
         """Lets get the angles going"""
         epsilon=1e-10
-        dotproduct=ds['u_buoy']*ds['u_ERA5']+ds['v_buoy']*ds['v_ERA5']
-        norms=(np.sqrt(ds['u_ERA5']**2+ds['v_ERA5']**2)*np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2))+epsilon
-        ds['dotproduct']=dotproduct
-        ds['norms']=norms
-        costheta=dotproduct/norms
-        ds['costheta']=costheta
 
-        targeted= np.arccos(costheta).to_frame(name='angle')
+        dot = ds['u_ERA5']*ds['u_buoy'] + ds['v_ERA5']*ds['v_buoy']
+        cross = ds['u_ERA5']*ds['v_buoy'] - ds['v_ERA5']*ds['u_buoy']
+
+        angles_signed = np.degrees(np.arctan2(cross, dot))
+        ds['dot']=dot
+        ds['cross']=cross
+        targeted= angles_signed.to_frame(name='angle')
+        if dotcross==True:
+            inputlist.append('cross')
+            inputlist.append('dot')
         print('allright angles')
 
     else:
@@ -199,9 +202,9 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     #Nothing to do with 'sic_CDR', 'h_piomas'
 
 
-    # for i in ds.columns:
-    #     if i not in inputlist:
-    #         ds=ds.drop(i,axis=1)
+    for i in ds.columns:
+        if i not in inputlist:
+            ds=ds.drop(i,axis=1)
     print(targeted)
     labels=[targeted.columns,ds.columns]
 
@@ -217,7 +220,8 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     return datapd,dataset,dataloader,means,stds,maxes,labels
 
 
-def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True):
+def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, 
+               trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True,dotcross =True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
     based on the filename containing
@@ -327,15 +331,19 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, tr
     elif 'angle'==target:
         """Lets get the angles going"""
         epsilon=1e-10
-        dotproduct=ds['u_buoy']*ds['u_ERA5']+ds['v_buoy']*ds['v_ERA5']
-        norms=(np.sqrt(ds['u_ERA5']**2+ds['v_ERA5']**2)*np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2))+epsilon
-        ds['dotproduct']=dotproduct
-        ds['norms']=norms
-        costheta=dotproduct/norms
-        ds['costheta']=costheta
 
-        targeted= np.arccos(costheta).to_frame(name='angle')
+        dot = ds['u_ERA5']*ds['u_buoy'] + ds['v_ERA5']*ds['v_buoy']
+        cross = ds['u_ERA5']*ds['v_buoy'] - ds['v_ERA5']*ds['u_buoy']
+
+        angles_signed = np.degrees(np.arctan2(cross, dot))
+        ds['dot']=dot
+        ds['cross']=cross
+        targeted= angles_signed.to_frame(name='angle')
+        if dotcross==True:
+            inputlist.append('cross')
+            inputlist.append('dot')
         print('allright angles')
+
 
     else:
         print('Please specify a valid target ( buoynorm, u/v, static, angle)')
