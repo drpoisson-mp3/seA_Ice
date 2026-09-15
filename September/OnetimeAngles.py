@@ -13,7 +13,7 @@ inputlist=['u_ERA5','v_ERA5','h_piomas','sic_CDR','x_EASE','y_EASE','bath','sin'
 lr =1e-3
 n_epoch=20
 data,_,dataloader,means,stds,maxes,labels=trainloader('../data/DRIFT_DATA_TRAIN.csv',256,inputlist,target='angle')
-data=data.loc[data['costheta'==0]]
+data=data.loc[data['costheta']==0]
 
 mlp256=NNforAngles(len(labels[1])).to(device)
 print('Total Epoch: ', n_epoch)

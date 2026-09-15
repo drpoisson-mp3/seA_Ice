@@ -65,4 +65,4 @@ ds = xr.Dataset(
     }
 )
 
-ds.to_netcdf('./interpolated_velocities.nc','w')
+ds.to_netcdf('./interpolated_velocities2.nc','w')
