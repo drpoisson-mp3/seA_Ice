@@ -1,5 +1,6 @@
 # Ignore all data by default
 data/*
+throwaway/*
 
 # But allow specific files/folders back in
 !data/.gitkeep

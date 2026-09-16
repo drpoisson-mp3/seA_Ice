@@ -1,3 +1,0 @@
-Model: NNforAngle (on gpu)
-Weights: angle_without_stoppage_12inputs_30E_0.0001lr_15-15h_09m_19s.pt
-Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'sic_CDR', 'x_EASE', 'y_EASE', 'bath', 'sin', 'cos', 'windnorm', 'cross', 'dot']

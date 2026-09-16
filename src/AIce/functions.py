@@ -48,7 +48,8 @@ def Static0Danalysis(truth,pred,threshold=.95):
     return zeroD,pred
 
 
-def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True, dotcross=True):
+def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, 
+                log1pwind=False, shuffle=True, dotcross=False, no_static=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a training data (pd.dframe), dataset, dataloader, the means and stds and maxes, based on the filename containing
     the data, a selected batchsize = bs, an inputlist which could contain (case-sensitive, w/o what's in between the brackets):\n
@@ -125,13 +126,23 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
         dot = ds['u_ERA5']*ds['u_buoy'] + ds['v_ERA5']*ds['v_buoy']
         cross = ds['u_ERA5']*ds['v_buoy'] - ds['v_ERA5']*ds['u_buoy']
 
-        angles_signed = np.degrees(np.arctan2(cross, dot))
-        ds['dot']=dot
-        ds['cross']=cross
-        targeted= angles_signed.to_frame(name='angle')
+        angles_signed = (np.arctan2(cross, dot))
+
+        targeted = angles_signed.to_frame(name='angle')
+
+        if no_static == True:
+            targeted = targeted.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            ds=ds.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            print('static cases removed for training')
+        else:
+            print('static cases kept for training')
+
         if dotcross==True:
+            ds['dot']=dot
+            ds['cross']=cross
             inputlist.append('cross')
             inputlist.append('dot')
+            print('dot and cross product of the wind kept in the pd.dataframe')
         print('allright angles')
 
     else:
@@ -205,7 +216,7 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     for i in ds.columns:
         if i not in inputlist:
             ds=ds.drop(i,axis=1)
-    print(targeted)
+    
     labels=[targeted.columns,ds.columns]
 
 
@@ -221,7 +232,8 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
 
 
 def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, 
-               trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, log1pwind=False, shuffle=True,dotcross =True):
+               trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, 
+               log1pwind=False, shuffle=True, dotcross =False, no_static=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a test data (pd.dframe), dataset, dataloader (using bs or if bs==0-> bs=len(testset)
     based on the filename containing
@@ -247,7 +259,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
     if trainingset_loaded==False:
         #########################################################################################################################################33
         # to get the means and stds
-        trainpd=pd.read_csv('../data/DRIFT_DATA_TRAIN.csv')
+        trainpd=pd.read_csv(training_file)
         # adding the norms
 
         trainpd['windnorm']=np.sqrt(trainpd['u_ERA5']**2+trainpd['v_ERA5']**2)
@@ -330,20 +342,29 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
     
     elif 'angle'==target:
         """Lets get the angles going"""
-        epsilon=1e-10
 
         dot = ds['u_ERA5']*ds['u_buoy'] + ds['v_ERA5']*ds['v_buoy']
         cross = ds['u_ERA5']*ds['v_buoy'] - ds['v_ERA5']*ds['u_buoy']
 
-        angles_signed = np.degrees(np.arctan2(cross, dot))
-        ds['dot']=dot
-        ds['cross']=cross
-        targeted= angles_signed.to_frame(name='angle')
+        angles_signed = (np.arctan2(cross, dot))
+
+        targeted = angles_signed.to_frame(name='angle')
+
+        if no_static == True:
+            targeted = targeted.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            ds=ds.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            print('static cases removed for testing')
+        else:
+            print('static cases kept for testing')
+
+        
         if dotcross==True:
+            ds['dot']=dot
+            ds['cross']=cross
             inputlist.append('cross')
             inputlist.append('dot')
-        print('allright angles')
-
+            print('dot and cross product of the wind kept in the pd.dataframe')
+        
 
     else:
         print('Please specify a valid target ( buoynorm, u/v, static, angle)')
@@ -401,7 +422,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
         for label in uv:
 
             ds[label]=(ds[label]-means[label])/stds[label]
-            print('Wind components (u/v_ERA5) normalized by z-score')
+        print('Wind components (u/v_ERA5) normalized by z-score')
 
     #Nothing to do with 'sic_CDR', 'h_piomas'
 

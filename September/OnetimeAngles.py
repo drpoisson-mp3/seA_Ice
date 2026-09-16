@@ -13,7 +13,7 @@ inputlist=['u_ERA5','v_ERA5','h_piomas','sic_CDR','x_EASE','y_EASE','bath','sin'
 lr =1e-3
 n_epoch=20
 data,_,dataloader,means,stds,maxes,labels=trainloader('../data/DRIFT_DATA_TRAIN.csv',256,inputlist,target='angle')
-data=data.loc[data['cross']!=0].loc[data['dot']!=0]
+
 print(labels)
 print('aaa')
 print(labels[1])
