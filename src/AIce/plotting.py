@@ -9,20 +9,25 @@ import pandas as pd
 import cartopy.crs as ccrs
 
 def PredAgainstTarget(target,pred,colorer,cmap='viridis',title='Predictions in Terms of Observations',
-                      save=False, savepath=''):
+                      save=False, savepath='', lim=[]):
     """target,pred,colorer, are supposed to be arrays
     plots values of the target agaisnt the prediction colored by some scalar."""
     minn=np.min([np.min(pred),np.min(target)])
     maxx=np.max([np.max(pred),np.max(target)])
     norm=Normalize(np.min(colorer),np.max(colorer))
-
+   
     plt.title(title)
     plt.ylabel(pred.name)
     plt.xlabel(target.name)
-    plt.xlim([0,maxx])
-    plt.ylim([0,maxx])
+    if lim==[]:
+        plt.xlim([minn,maxx])
+        plt.ylim([minn,maxx])
+    else:
+        plt.xlim(lim)
+        plt.ylim(lim)
+
     plt.scatter(target,pred,c=colorer,cmap=cmap, norm=norm, alpha=1)
-    plt.plot(np.arange(maxx),'k')
+    plt.plot(np.linspace(minn,maxx),np.linspace(minn,maxx),'k')
     plt.colorbar(label=f'{colorer.name}')
     if save==True:
         plt.savefig(savepath)

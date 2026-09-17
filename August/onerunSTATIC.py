@@ -28,7 +28,7 @@ criterion = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
 # Hyperparameters
 lr=1e-3
-n_epoch=200
+n_epoch=20
 print('Total Epoch: ', n_epoch)
 print('Learning Rate: ', lr)
 
@@ -83,7 +83,7 @@ torch.save(static256.state_dict(), f'.//weights//staticNN_{len(labels[1])}inputs
 with open(f'.//weights//staticNN_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}.txt','w') as f:
     f.write(f'Model: static256 (on gpu)\n')
     f.write(f'Weights: stat256_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}.pt\n')
-    f.write(f'Associated inputs: {inputlist}')
+    f.write(f'Associated inputs: {inputlist}\n')
     f.write(f'Weight favouring true positive: {pos_weight}')
 
 

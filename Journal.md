@@ -30,3 +30,6 @@
 
 2026-9-14:
 - Made a training loop for the Angles and mostly worked on the CIE recommandations. 
+
+2026-09-16:
+- Trained some static MLP in a cleaner way, modified some old functions and rework some analysis to be put in the journal de bord. Read on the CIE some more and made some pancakes for the CAOS AGM and attended Dan's strange AOS stats seminar
