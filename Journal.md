@@ -33,3 +33,6 @@
 
 2026-09-16:
 - Trained some static MLP in a cleaner way, modified some old functions and rework some analysis to be put in the journal de bord. Read on the CIE some more and made some pancakes for the CAOS AGM and attended Dan's strange AOS stats seminar
+
+2026-09-23:
+- Wokred further on the currents and made the d2c in the direction of the wind algorithm

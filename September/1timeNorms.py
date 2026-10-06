@@ -9,11 +9,11 @@ from AIce.functions import trainloader,testloader,redim,torchRMSE
 from AIce.models import NNforNorms
 
 device = torch.device(torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu')
-inputlist=['u_ERA5','v_ERA5','h_piomas','sic_CDR','x_EASE','y_EASE','bath','sin','cos', 'windnorm']
+inputlist=['u_ERA5','v_ERA5','h_piomas','sic_CDR','bath']
 
 # Hyperparameters
 lr=1e-3
-n_epoch=200
+n_epoch=20
 print('Total Epoch: ', n_epoch)
 print('Learning Rate: ', lr)
 

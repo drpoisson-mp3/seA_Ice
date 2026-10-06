@@ -61,7 +61,7 @@ def ResidualOnTheMap(data,pred='',target='buoynorm', vmin=-10,vmax=10):
         lons, lats,
         c=residual, cmap=cmap, norm=norm,
         transform=ccrs.PlateCarree(),  # tells cartopy the data is in lon/lat, not the plot's projection
-        s=15, alpha=0.75
+        s=.1, alpha=0.75
     )
     # Add map context
     ax.coastlines()

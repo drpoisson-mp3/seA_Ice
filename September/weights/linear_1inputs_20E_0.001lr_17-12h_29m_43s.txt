@@ -1,0 +1,3 @@
+Model: linear (on gpu)
+Weights: linear_1inputs_20E_0.001lr_17-12h_29m_43s.pt
+Associated inputs: ['windnorm']
