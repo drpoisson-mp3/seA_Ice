@@ -156,3 +156,59 @@ class linear(nn.Module):
         x=self.linear(x)
         return x
 
+
+class simplrNNforNorms(nn.Module):
+    """THE FINAL LAYER IS NOT LINEAR FOR THE LOG1Ped Norms
+        MLP with Relu, 256->128->64\n
+        SOFTPLUS 64->2"""
+    def __init__(self, n_inputs):
+        """THE FINAL LAYER IS NOT LINEAR FOR THE LOG1Ped Norms
+        MLP with Relu, 256->128->64\n
+        SOFTPLUS 64->2"""
+        super().__init__()
+        self.fc1=nn.Linear(n_inputs,16)
+        self.fc2=nn.Linear(16,8)
+        self.fc3=nn.Linear(8,4)
+        # self.fc4=nn.Linear(32,16)
+        # self.fc5=nn.Linear(16,8)
+        self.fc6=nn.Linear(4,2)
+        self.final=nn.Linear(2,1)
+        #self.fourier=nn.Linear(n_inputs,n_inputs)
+
+    def forward(self,x):
+        #x=torch.cos(self.fourier(x))
+        x=F.relu(self.fc1(x))
+        x=F.relu(self.fc2(x))
+        x=F.relu(self.fc3(x))
+        # x=F.sigmoid(self.fc4(x))
+        # x=F.sigmoid(self.fc5(x))
+        x=F.relu(self.fc6(x))
+        x=self.final(x)
+        return F.softplus(x)
+
+class simplrNNforAngles(nn.Module):
+    """MLP with Relu, 256->128->64->1\n
+         finale layer linear noRelu64->1"""
+    def __init__(self, n_inputs):
+        super().__init__()
+        self.fc1=nn.Linear(n_inputs,16)
+        self.fc2=nn.Linear(16,8)
+        self.fc3=nn.Linear(8,4)
+        self.fc4=nn.Linear(4,2)
+
+        self.final=nn.Linear(2,1)
+        
+        #self.fourier=nn.Linear(n_inputs,n_inputs)
+
+    def forward(self,x):
+        #x=torch.cos(self.fourier(x))
+        x=F.relu(self.fc1(x))
+        x=F.relu(self.fc2(x))
+        x=F.relu(self.fc3(x))
+        x=F.relu(self.fc4(x))
+
+        # x=F.sigmoid(self.fc4(x))
+        # x=F.sigmoid(self.fc5(x))
+        # x=F.sigmoid(self.fc6(x))
+        x=self.final(x)
+        return x
