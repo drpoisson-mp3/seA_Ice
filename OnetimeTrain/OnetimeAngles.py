@@ -9,14 +9,18 @@ from time import strftime
 
 device='cuda'
 
-inputlist=['u_ERA5','v_ERA5','h_piomas','bath','d2cwind']
+inputlist=['u_ERA5','v_ERA5','h_piomas','bath']
 lr =1e-3
 n_epoch=20
-data,_,dataloader,means,stds,maxes,labels=trainloader('../data/TrainsetD2C.csv',256,inputlist,target='angle')
+data,_,dataloader,means,stds,maxes,labels=trainloader('../data/DRIFT_DATA_TRAIN.csv',256,inputlist,target='angle')
+# testd,_,_,_,_,_,_=trainloader('../data/TrainsetD2C.csv',256,inputlist,target='buoynorm')
 
 print(labels)
 # print('aaa')
 # print(labels[1])
+print(len(data))
+# print(len(testd))
+
 
 mlp256=NNforAngles(len(labels[1])).to(device)
 print('Total Epoch: ', n_epoch)

@@ -1,0 +1,3 @@
+Model: NNforNorms (on gpu)
+Weights: Norms_4inputs_20E_0.001lr_09-15h_02m_17s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'bath']

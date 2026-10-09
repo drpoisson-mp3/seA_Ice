@@ -195,7 +195,6 @@ class simplrNNforAngles(nn.Module):
         self.fc2=nn.Linear(16,8)
         self.fc3=nn.Linear(8,4)
         self.fc4=nn.Linear(4,2)
-
         self.final=nn.Linear(2,1)
         
         #self.fourier=nn.Linear(n_inputs,n_inputs)

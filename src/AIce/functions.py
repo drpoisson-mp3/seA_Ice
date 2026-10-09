@@ -258,7 +258,7 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     return datapd,dataset,dataloader,means,stds,maxes,labels
 
 
-def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, 
+def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, mean_d2cwind=-1,
                trainingset_loaded=True, training_file='', log1p=True, static_threshold=1e-3, 
                log1pwind=False, shuffle=True, dotcross =False, no_static=True):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
@@ -406,10 +406,11 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
     
     #time of the year
     if 'sin' in inputlist:
-        #ADDING THE COS AND SIN OF THE YEAR
-        ds['sin']=np.sin(ds['doy']*(2*np.pi/364))
-        ds['cos']=np.cos(ds['doy']*(2*np.pi/364))
-        print('Sin and Cos added')
+        if 'sin' not in ds.columns:
+            #ADDING THE COS AND SIN OF THE YEAR
+            ds['sin']=np.sin(ds['doy']*(2*np.pi/364))
+            ds['cos']=np.cos(ds['doy']*(2*np.pi/364))
+            print('Sin and Cos added')
 
     # POSITIONS
   

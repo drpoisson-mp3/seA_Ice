@@ -6,10 +6,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from time import strftime
 from AIce.functions import trainloader,testloader,redim,torchRMSE
-from AIce.models import NNforNorms
+from AIce.models import simplrNNforNorms
 
 device = torch.device(torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu')
-inputlist=['u_ERA5','v_ERA5','h_piomas','bath','d2cwind']
+inputlist=['u_ERA5','v_ERA5','h_piomas','bath','windnorm']
 
 # Hyperparameters
 lr=1e-3
@@ -17,7 +17,7 @@ n_epoch=20
 print('Total Epoch: ', n_epoch)
 print('Learning Rate: ', lr)
 
-traindata,_,traindataloader,means,stds,maxes,labels=trainloader('../data/TrainsetD2C.csv',256,inputlist,target='buoynorm')
+traindata,_,traindataloader,means,stds,maxes,labels=trainloader('../data/DRIFT_DATA_TRAIN.csv',256,inputlist,target='buoynorm')
 # print(len(traindata))
 # print(traindata.loc[traindata['d2cwind_unbounded']==1])
 print(traindata.isna().any())
@@ -26,7 +26,7 @@ print(traindata.isna().any())
 # print('aaa')
 # print(labels[1])
 
-mlp256=NNforNorms(len(labels[1])).to(device)
+mlp256=simplrNNforNorms(len(labels[1])).to(device)
 print('Total Epoch: ', n_epoch)
 print('Learning Rate: ', lr)
 print(labels)
@@ -83,7 +83,7 @@ for epoch in range(n_epoch):
     rlosses[epoch]=rl
     print('Epoch avg loss: ', np.mean(rl))
 
-saving_name=f'Norms_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}'
+saving_name=f'simplr_Norms_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}'
 month='2.October'
 torch.save(mlp256.state_dict(), f'..//{month}//weights//{saving_name}.pt')
 
