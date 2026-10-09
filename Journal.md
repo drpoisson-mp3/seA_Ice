@@ -36,3 +36,6 @@
 
 2026-09-23:
 - Wokred further on the currents and made the d2c in the direction of the wind algorithm
+
+2026-10-09:
+- Worked the Analysis of the Simpler and the d2c
