@@ -1,27 +1,43 @@
-from AIce.functions import torchRMSE,trainloader,testloader,redim,getRMSE
-from torch import optim
-from AIce.models import NNforAngles
-import numpy as np
 import torch
+import torch.nn as nn
+import torch.optim as optim
+
+import numpy as np
 import matplotlib.pyplot as plt
-
 from time import strftime
+from AIce.functions import trainloader,testloader,redim,torchRMSE
+from AIce.models import NNforNorms
 
-device='cuda'
+device = torch.device(torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else 'cpu')
+inputlist=['u_ERA5','v_ERA5','h_piomas','bath','d2cwind']
 
-inputlist=['u_ERA5','v_ERA5','h_piomas','sic_CDR','x_EASE','y_EASE','bath','sin','cos', 'windnorm']
-lr =1e-3
+# Hyperparameters
+lr=1e-3
 n_epoch=20
-data,_,dataloader,means,stds,maxes,labels=trainloader('../data/DRIFT_DATA_TRAIN.csv',256,inputlist,target='angle')
+print('Total Epoch: ', n_epoch)
+print('Learning Rate: ', lr)
 
-print(labels)
-print('aaa')
-print(labels[1])
+traindata,_,traindataloader,means,stds,maxes,labels=trainloader('../data/TrainsetD2C.csv',256,inputlist,target='buoynorm')
+# print(len(traindata))
+# print(traindata.loc[traindata['d2cwind_unbounded']==1])
+print(traindata.isna().any())
 
-mlp256=NNforAngles(len(labels[1])).to(device)
+# print(labels)
+# print('aaa')
+# print(labels[1])
+
+mlp256=NNforNorms(len(labels[1])).to(device)
 print('Total Epoch: ', n_epoch)
 print('Learning Rate: ', lr)
 print(labels)
+print(next(iter(traindataloader))[1])
+
+
+
+# x, y = next(iter(traindataloader))[1], next(iter(traindataloader))[0]
+# print(torch.isnan(x).any(), torch.isnan(y).any())
+# print(x.shape)
+
 
 rlosses={}
 losses=[]
@@ -34,7 +50,7 @@ for epoch in range(n_epoch):
     print('Starting Epoch ',epoch)
     curpercent=0
     rl=[]
-    for i,data in enumerate(dataloader):
+    for i,data in enumerate(traindataloader):
 
         # get the inputs and the target
         truth,inputs= data[0].to(device),data[1].to(device)
@@ -57,7 +73,7 @@ for epoch in range(n_epoch):
         rloss+= loss.item()
         rcount +=1
         #print where we at plus the loss
-        percent= round(i/len(dataloader)*100)
+        percent= round(i/len(traindataloader)*100)
         if percent != curpercent:
         #    print(percent, 'loss: ', rloss/rcount)
             curpercent=percent
@@ -67,12 +83,12 @@ for epoch in range(n_epoch):
     rlosses[epoch]=rl
     print('Epoch avg loss: ', np.mean(rl))
 
-saving_name=f'angle_without_stoppage_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}'
+saving_name=f'Norms_{len(labels[1])}inputs_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}'
+month='2.October'
+torch.save(mlp256.state_dict(), f'..//{month}//weights//{saving_name}.pt')
 
-torch.save(mlp256.state_dict(), f'.//weights//{saving_name}.pt')
-
-with open(f'.//weights//{saving_name}.txt','w') as f:
-    f.write(f'Model: NNforAngle (on gpu)\n')
+with open(f'..//{month}//weights//{saving_name}.txt','w') as f:
+    f.write(f'Model: NNforNorms (on gpu)\n')
     f.write(f'Weights: {saving_name}.pt\n')
     f.write(f'Associated inputs: {inputlist}')
 
@@ -86,5 +102,5 @@ for i in (rlosses):
     epochavg.append(avg)
 xx=[i*len(rlosses[0]) for i in rlosses]
 ax.plot(xx,epochavg,'.-k')
-plt.savefig(f'.//outputs//loss_for_{saving_name}.png')
+plt.savefig(f'..//{month}//outputs//loss_for_{saving_name}.png')
 plt.close('all')

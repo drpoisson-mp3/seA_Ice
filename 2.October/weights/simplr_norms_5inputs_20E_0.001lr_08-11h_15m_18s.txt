@@ -1,0 +1,3 @@
+Model: simplrNNforNorms (on gpu)
+Weights: simplr_norms_5inputs_20E_0.001lr_08-11h_15m_18s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'bath', 'windnorm']

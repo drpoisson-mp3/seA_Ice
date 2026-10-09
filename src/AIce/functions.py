@@ -10,7 +10,7 @@ def getRMSE(Target,Outputs):
 
 def torchRMSE(target,outputs):
     '''GPU and backprop Friendly. Calculates the RMSE between, the target and the model outputs'''
-    return (torch.mean((target-outputs)**2))**.5
+    return torch.sqrt(torch.mean((target-outputs)**2))
 
 def Static0Danalysis(truth,pred,threshold=.95):
     """Returns the 0D analysis information for the Static model, and a mask where given a threshold the model predicts staticity (TRUE)\n
@@ -60,6 +60,9 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
     windnorm,\n
     sic_CDR',\n
     h_piomas,\n
+    d2cwind\n
+
+        
     Target can be (for now) again case-sensitive: \n
     u/v \n
     buoynorm (precise log1p for proper normalization)\n
@@ -149,6 +152,9 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
         print('Please specify a valid target ( buoynorm, u/v, static, angle)')
         print(targettensor)
 
+    #######################################################################################
+    # THE INPUTS FOR THE MODEL
+
     
     #time of the year
     if 'sin' in inputlist:
@@ -180,7 +186,25 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
         ds['y_EASE']=ds['y_EASE']/max_y
         print('x/y (x_EASE, y_EASE) normalized by maximum')
 
+    
+    # D2C
+    if 'd2cwind' in inputlist:
+        if ds['d2cwind'].isna().any()==True:
+            unbounded = ds['d2cwind'].isna()
+            ds['d2cwind_unbounded'] = unbounded.astype(float)
+            ds['d2cwind'] = ds['d2cwind'].fillna(ds['d2cwind'].mean())       # I feel like most go over but would hit the coast sometime soon since they are in the fram strait pointing toward Norway?
 
+            if 'd2c_unbounded' not in inputlist:
+                    inputlist.append('d2cwind_unbounded') 
+                    print('Unbounded d2cwind added to the inputlist')
+
+
+        maxes['d2cwind'] = ds['d2cwind'].max()          # max over finite values only
+        ds['d2cwind'] = ds['d2cwind'] / maxes['d2cwind']
+        print('d2cwind normalized by maxes')
+
+
+    
     # WIND
     #norm
     if 'windnorm' in inputlist:
@@ -210,6 +234,9 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
             stds[label]=ds[label].std()
             ds[label]=(ds[label]-ds[label].mean())/ds[label].std()
         print('Wind components (u/v_ERA5) normalized by z-score')
+
+
+
     #Nothing to do with 'sic_CDR', 'h_piomas'
 
 
@@ -248,11 +275,13 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
     windnorm,\n
     sic_CDR',\n
     h_piomas,\n
+    d2cwind\n
 
     Target can be (for now) again case-sensitive: \n
     u/v \n
     buoynorm (precise log1p for proper normalization)\n
     static\n
+
 
     The year/month/day and id_buoy are consistently removed from the datasets.
     """
@@ -284,13 +313,18 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
         max_x=np.max(np.abs(trainpd['x_EASE']))
         max_y =np.max(np.abs(trainpd['y_EASE']))
 
-
-
         maxes={
             'bath':max_bathy,
             'x_EASE': max_x,
             'y_EASE': max_y
+            
         }
+
+
+        if 'd2cwind' in trainpd.columns:
+            max_d2cwind=trainpd['d2cwind'].max()
+            maxes['d2cwind']=max_d2cwind
+            mean_d2cwind=trainpd['d2cwind'].mean()
 
     # opening the csv
     ds=pd.read_csv(filename)
@@ -424,6 +458,20 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={},
             ds[label]=(ds[label]-means[label])/stds[label]
         print('Wind components (u/v_ERA5) normalized by z-score')
 
+    # D2C
+    if 'd2cwind' in inputlist:
+        if ds['d2cwind'].isna().any()==True:
+            unbounded = ds['d2cwind'].isna()
+            ds['d2cwind_unbounded'] = unbounded.astype(float)
+            ds['d2cwind'] = ds['d2cwind'].fillna(mean_d2cwind)       # I feel like most go over but would hit the coast sometime soon since they are in the fram strait pointing toward Norway?
+
+            if 'd2c_unbounded' not in inputlist:
+                    inputlist.append('d2cwind_unbounded') 
+                    print('Unbounded d2cwind added to the inputlist')
+        
+        maxes['d2cwind'] = ds['d2cwind'].max()          # max over finite values only
+        ds['d2cwind'] = ds['d2cwind'] / maxes['d2cwind']
+        print('d2cwind normalized by maxes')
     #Nothing to do with 'sic_CDR', 'h_piomas'
 
 

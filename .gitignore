@@ -10,6 +10,8 @@ throwaway/*
 !data/longitude_EASE.csv
 !data/bathymetry_EASE.csv
 !data/README.txt
+!data/TestsetD2C.csv
+!data/TrainsetD2C.csv
 
 # Common junk
 __pycache__/
