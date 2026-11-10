@@ -42,7 +42,7 @@ for epoch in range(n_epoch):
 
         # get the inputs and the target
         truth,inputs= data[0].to(device),data[1].to(device)
-
+        print(len(truth))
         # zero the gradients,
         optimizer.zero_grad()
 

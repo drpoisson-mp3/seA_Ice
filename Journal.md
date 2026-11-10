@@ -39,3 +39,6 @@
 
 2026-10-09:
 - Worked the Analysis of the Simpler and the d2c
+
+2026-11-10:
+- Meeting with Quentin and Bruno in the morning, afterwhich I made a plan of the next steps. In the late afternoon I worked on the website and biked. 
