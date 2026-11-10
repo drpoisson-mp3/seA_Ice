@@ -21,6 +21,7 @@ total_cases=len(datapd)
 total_static= (datapd['static']).sum()
 n_moving = total_cases -total_static
 pos_weight = torch.tensor([n_moving / total_static]).to(device) # pos_weight multiplies the positive 1 case, i.e. the is static case 
+print(pos_weight)
 
 pos_weight*=2
 
