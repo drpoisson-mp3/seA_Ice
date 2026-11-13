@@ -166,7 +166,7 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
   
     # bathymetry
     if 'bath' in inputlist:
-        bath= pd.read_csv('../data/bathymetry_EASE.csv').values
+        bath= pd.read_csv('../data/bathymetry_EASE.csv', header=None).values
         ds['bath']= bath[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
 
         max_bath=np.max(np.abs(ds['bath']))
@@ -305,7 +305,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, me
             trainpd[label]=(trainpd[label]-trainpd[label].mean())/trainpd[label].std()
 
         #For the Bathymetry we divide by the max as well (is actually a min)
-        bath= pd.read_csv('../data/bathymetry_EASE.csv').values
+        bath= pd.read_csv('../data/bathymetry_EASE.csv',header=None).values
         trainpd['bath']= bath[trainpd['y_EASE'].astype(int),trainpd['x_EASE'].astype(int)]
         max_bathy=np.max(np.abs(trainpd['bath']))
 
@@ -416,7 +416,7 @@ def testloader(filename, inputlist, target,bs=0, means={}, stds={}, maxes={}, me
   
     # bathymetry
     if 'bath' in inputlist:
-        bath= pd.read_csv('../data/bathymetry_EASE.csv').values
+        bath= pd.read_csv('../data/bathymetry_EASE.csv',header=None).values
         ds['bath']= bath[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
 
         ds['bath']=ds['bath']/maxes['bath']
