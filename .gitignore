@@ -12,6 +12,7 @@ throwaway/*
 !data/README.txt
 !data/TestsetD2C.csv
 !data/TrainsetD2C.csv
+!data/current/
 
 # Common junk
 __pycache__/
