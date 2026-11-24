@@ -1,0 +1,3 @@
+Model: NNforNormsandAngles (on gpu)
+Weights: Norms_and_Angles_Inputs_ssh_currents_20E_0.001lr_24-15h_59m_43s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'ssh_uw', 'ssh_vw']
