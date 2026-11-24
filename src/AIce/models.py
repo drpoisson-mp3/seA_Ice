@@ -211,3 +211,31 @@ class simplrNNforAngles(nn.Module):
         # x=F.sigmoid(self.fc6(x))
         x=self.final(x)
         return x
+
+
+class NNforNormsandAngles(nn.Module):
+    """ MLP with Relu, 256->128->64\n
+    Input: n_features (torch.tensor)\n
+    Outputs: F.softplus(norm),cos, sin #(all tensors)\n
+    The final layer is linear for the angles BUT NOT FOR the Norms (softplus= ln(1+e^x))\n
+    Note that in normalizing the data, the norms are normalized by Log1P (so the output norms need to be Exp1m to be interpreted at inference)\n
+    the cos/sin are already between -1 and 1.\n
+         """
+    def __init__(self, n_inputs):
+        super().__init__()
+        self.fc1=nn.Linear(n_inputs,256)
+        self.fc2=nn.Linear(256,128)
+        self.fc3=nn.Linear(128,64)
+        self.final=nn.Linear(64,3)
+
+
+    def forward(self,x):
+        x=F.relu(self.fc1(x))
+        x=F.relu(self.fc2(x))
+        x=F.relu(self.fc3(x))
+
+        x=self.final(x) # (batch, 3)
+        norm = x[:,0]   # (batch,)
+        cos = x[:,1]    # (batch,)
+        sin = x[:,2]    # (batch,)
+        return F.softplus(norm),cos, sin

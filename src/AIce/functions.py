@@ -49,7 +49,9 @@ def Static0Danalysis(truth,pred,threshold=.95):
 
 
 def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e-3, 
-                log1pwind=False, shuffle=True, dotcross=False, no_static=True):
+                log1pwind=False, shuffle=True, dotcross=False, no_static=True,
+                model_norm_angle=False
+                ):
     """For easy outputs: datapd,dataset,dataloader,means,stds,maxes,labels \n
     Function returning a training data (pd.dframe), dataset, dataloader, the means and stds and maxes, based on the filename containing
     the data, a selected batchsize = bs, an inputlist which could contain (case-sensitive, w/o what's in between the brackets):\n
@@ -64,6 +66,7 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
 
         
     Target can be (for now) again case-sensitive: \n
+    norm_and_angle\n
     u/v \n
     buoynorm (precise log1p for proper normalization)\n
     static\n
@@ -148,9 +151,60 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
             print('dot and cross product of the wind kept in the pd.dataframe')
         print('allright angles')
 
+    if 'norm_and_angle'==target:
+        #ANGLE
+        epsilon=1e-10
+        
+        dot = ds['u_ERA5']*ds['u_buoy'] + ds['v_ERA5']*ds['v_buoy']
+        cross = ds['u_ERA5']*ds['v_buoy'] - ds['v_ERA5']*ds['u_buoy']
+
+        angles_signed = (np.arctan2(cross, dot))
+
+        if no_static == True:
+            angles_signed = angles_signed.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            ds=ds.loc[ds['u_buoy']!=0].loc[ds['v_buoy']!=0]
+            print('static cases removed for training')
+        else:
+            print('static cases kept for training')
+
+        if dotcross==True:
+            ds['dot']=dot
+            ds['cross']=cross
+            inputlist.append('cross')
+            inputlist.append('dot')
+            print('dot and cross product of the wind kept in the pd.dataframe')
+        print('allright angles')
+
+        #NORM
+        buoynorm=np.sqrt(ds['u_buoy']**2+ds['v_buoy']**2)
+        
+        if log1p==True:
+            #log1p Normalization
+            buoynorm=np.log1p(buoynorm)
+            print('Buoynorm normalized by log1p')
+        
+        elif log1p==False:
+            #z-score normalization
+            means['buoynorm']=buoynorm.mean()
+            stds['buoynorm']=buoynorm.std()
+            buoynorm=(buoynorm-buoynorm.mean())/buoynorm.std()
+            print('Buoynorm normalized by z-score')
+
+        # Creating the target
+        if model_norm_angle==True:
+            print('Building the target in form [norm,cos,sin] ')
+            norm=buoynorm.to_frame(name='buoynorm')
+            cos=np.cos(angles_signed).to_frame(name='cos_angle')
+            sin=np.cos(angles_signed).to_frame(name='sin_angle')
+            targeted=pd.concat([norm,cos,sin],axis=1)
+        else:
+            print('wdym boolean is not True or False')
+
     else:
         print('Please specify a valid target ( buoynorm, u/v, static, angle)')
         print(targettensor)
+
+
 
     #######################################################################################
     # THE INPUTS FOR THE MODEL
