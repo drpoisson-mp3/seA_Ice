@@ -1,6 +1,7 @@
 import pandas as pd
 import torch
 import numpy as np
+import xarray as xr
 from torch.utils.data import TensorDataset,DataLoader
 
 
@@ -289,6 +290,46 @@ def trainloader(filename, bs, inputlist, target, log1p=True, static_threshold=1e
             ds[label]=(ds[label]-ds[label].mean())/ds[label].std()
         print('Wind components (u/v_ERA5) normalized by z-score')
 
+    if 'ssh_uw' in inputlist:
+        currents = xr.open_dataset('../data/current/ssh_currents.nc')
+        uvw=['ssh_uw','ssh_vw']
+
+        uw=currents['ssh_uw'].values
+        vw=currents['ssh_vw'].values
+
+        ds['ssh_uw']=uw[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
+        ds['ssh_vw']=vw[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
+
+        if ds['ssh_uw'].isna().any()==True or ds['ssh_vw'].isna().any()==True:
+            n_before = len(ds)
+            
+            mask = ds[['ssh_uw', 'ssh_vw']].notna().all(axis=1)   # True where both are valid
+
+            ds      = ds[mask].reset_index(drop=True)
+            targeted = targeted[mask.values].reset_index(drop=True) 
+            print(f'Removed {n_before - len(ds)} rows ({100*(n_before-len(ds))/n_before:.1f}%)')
+
+        for label in uvw:
+            means[label]=ds[label].mean()
+            stds[label]=ds[label].std()
+            ds[label]=(ds[label]-ds[label].mean())/ds[label].std()
+
+        print('SSH-Currents loaded as components, normalized by z-score')
+
+    if 'res_uw' in inputlist:
+        currents = xr.open_dataset('../data/current/res_currents.nc')
+    
+        uw=currents['res_uw'].values
+        vw=currents['res_vw'].values
+        ds['res_uw']=uw[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
+        ds['res_vw']=vw[ds['y_EASE'].astype(int),ds['x_EASE'].astype(int)]
+        uvw=['res_uw','res_vw']
+        for label in uvw:
+            means[label]=ds[label].mean()
+            stds[label]=ds[label].std()
+            ds[label]=(ds[label]-ds[label].mean())/ds[label].std()
+
+        print('Residual-Currents loaded as components, normalized by z-score')
 
 
     #Nothing to do with 'sic_CDR', 'h_piomas'
