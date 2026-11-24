@@ -1,0 +1,3 @@
+Model: NNforNormsandAngles (on gpu)
+Weights: Norms_and_Angles_Inputs_D2C_20E_0.001lr_24-13h_34m_06s.pt
+Associated inputs: ['u_ERA5', 'v_ERA5', 'h_piomas', 'd2cwind', 'd2cwind_unbounded']
