@@ -42,7 +42,7 @@ input_type='_D2C_and_res_currents'
 print(input_type, "<- is that what we want?")
 
 saving_name=f'Norms_and_Angles_Inputs_{input_type}_{n_epoch}E_{lr}lr_{strftime("%d-%Hh_%Mm_%Ss")}'
-month='3.November'
+month='3. November'
 
 mlp256=NNforNormsandAngles(len(labels[1])).to(device) # Model
 optimizer = optim.Adam(mlp256.parameters(),lr=lr) # optimizers
@@ -181,18 +181,18 @@ ax.set_ylabel('Loss, non-dimensional')
 ax.set_xlim([-5, n_epoch*per_epoch_len])
 ax.set_xlabel('Epoch')
 
-plt.savefig(f'.//outputs//training//loss_for_{saving_name}.png')
+plt.savefig(f'..//{month}//outputs//training//loss_for_{saving_name}.png')
 plt.show()
 
 
 # Saving the model and it's info
-torch.save(mlp256.state_dict(), f'.//weights//{saving_name}.pt')
+torch.save(mlp256.state_dict(), f'..//{month}//weights//{saving_name}.pt')
 
-with open(f'.//weights//{saving_name}.txt','w') as f:
+with open(f'..//{month}//weights//{saving_name}.txt','w') as f:
     f.write(f'Model: NNforNormsandAngles (on gpu)\n')
     f.write(f'Weights: {saving_name}.pt\n')
     f.write(f'Associated inputs: {inputlist}\n')
 
 # Store Losses (serialize)
-with open(f'.//outputs//training//loss_{input_type}_{strftime("%d-%Hh_%Mm_%Ss")}.pickle', 'wb') as handle:
+with open(f'..//{month}//outputs//training//loss_{input_type}_{strftime("%d-%Hh_%Mm_%Ss")}.pickle', 'wb') as handle:
     pickle.dump(losses, handle, protocol=pickle.HIGHEST_PROTOCOL)
